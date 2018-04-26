@@ -6,17 +6,16 @@
 # Contributor: Richard Murri <admin@richardmurri.com>
 
 pkgbase=notmuch-git
-arch=('i686' 'x86_64')
-pkgname=('notmuch-emacs-git' 'notmuch-runtime-git' 'notmuch-python-git' 'notmuch-python2-git' 'notmuch-ruby-git' 'notmuch-vim-git' 'notmuch-mutt-git')
+arch=('i686' 'x86_64' 'armv7h')
+pkgname=('notmuch-runtime-git')
 epoch=3
 pkgver=0.27.3.31.g8dcc38ce
 pkgrel=1
 url="https://notmuchmail.org/"
 license=('GPL3')
-makedepends=('python2' 'python' 'python-sphinx' 'emacs' 'git' 
-	     'gnupg' 'ruby' 'pkgconfig' 'xapian-core' 'gmime' 'talloc')
+makedepends=('python' 'git' 'gnupg' 'pkgconfig' 'xapian-core' 'gmime' 'talloc')
 options=(!distcc !makeflags)
-source=("git+https://github.com/notmuch/notmuch")
+source=("git+https://github.com/10ne1/notmuch#branch=dev/aratiu/filesize-query-master-rebase")
 md5sums=('SKIP')
 
 pkgver() {
@@ -33,18 +32,8 @@ prepare(){
 
 build() {
   cd "${pkgbase%-git}"
-  ./configure --prefix=/usr --sysconfdir=/etc --includedir=/usr/include --without-zsh-completion
-  make 
-  
-  make -C "contrib/${pkgbase%-git}-mutt" "${pkgbase%-git}-mutt.1"
-  
-  make ruby-bindings
-  
-  cd bindings/python
-  python setup.py build
-  cd -
-  cd bindings/python2
-  python2 setup.py build
+  ./configure --prefix=/usr --sysconfdir=/etc --includedir=/usr/include --without-zsh-completion --without-ruby --without-emacs --without-api-docs --without-docs --without-desktop
+  make -j6
 }
 
 package_notmuch-emacs-git(){
@@ -62,7 +51,7 @@ package_notmuch-emacs-git(){
 }
 
 package_notmuch-runtime-git(){
-  arch=('i686' 'x86_64')
+  arch=('i686' 'x86_64' 'armv7h')
   pkgdesc="Runtime for notmuch and notmuch-mutt"
   depends=('xapian-core' 'gmime' 'talloc')
   conflicts=('notmuch-runtime')
@@ -116,7 +105,7 @@ package_notmuch-python2-git(){
 }
 
 package_notmuch-ruby-git(){
-  arch=('i686' 'x86_64')
+  arch=('i686' 'x86_64' 'armv7h')
   depends=('notmuch-runtime')
   pkgdesc="Ruby bindings for notmuch"
   optdepends=('ruby: for using the ruby bindings')
